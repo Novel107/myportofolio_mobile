@@ -1,24 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:myportofolio_mobile/widgets/project_card.dart';
+import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 
-// --- MODEL DATA ---
-class ItemHomepage {
-  final String name;
-  final IconData icon;
-  final Color color; // Atribut warna untuk kustomisasi setiap tombol
-
-  ItemHomepage(this.name, this.icon, this.color);
-}
-
-// --- WIDGET HALAMAN UTAMA ---
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
 
-  // Data diri 
   final String npm = "2506618881";
   final String nama = "Muhammad Fachri Novelino";
   final String kelas = "PBP D";
 
-  // Daftar tombol dengan warna background yang berbeda-beda
   final List<ItemHomepage> items = [
     ItemHomepage("Lihat Proyek", Icons.folder, Colors.blue),
     ItemHomepage("Tambah Proyek", Icons.add_circle, Colors.green),
@@ -37,7 +27,9 @@ class MyHomePage extends StatelessWidget {
           ),
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
+      drawer: const LeftDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -86,7 +78,6 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-// --- KOMPONEN INFOCARD ---
 class InfoCard extends StatelessWidget {
   final String title;
   final String content;
@@ -109,52 +100,6 @@ class InfoCard extends StatelessWidget {
             const SizedBox(height: 8.0),
             Text(content),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// --- KOMPONEN ITEMCARD ---
-class ItemCard extends StatelessWidget {
-  final ItemHomepage item;
-
-  const ItemCard(this.item, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      // Mengambil warna unik yang sudah didefinisikan di dalam list items
-      color: item.color,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: () {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(content: Text("Kamu telah menekan tombol ${item.name}!"))
-            );
-        },
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  item.icon,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-                const Padding(padding: EdgeInsets.all(3)),
-                Text(
-                  item.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );
