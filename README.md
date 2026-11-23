@@ -68,3 +68,37 @@ Bagian Spesifik yang Dibantu AI:
 
 1. Pemahaman Konsep Fundamental Flutter: Membantu menjelaskan dan memberikan analogi (seperti analogi koordinat lokasi) untuk mempermudah pemahaman mengenai widget tree, MaterialApp, BuildContext, serta perbedaan antara StatelessWidget dan StatefulWidget, dan konsep hot reload vs hot restart.
 2. Verifikasi Struktur Proyek: Memastikan bahwa proses pemisahan file menu.dart dan main.dart, serta pengecekan kualitas kode menggunakan flutter analyze telah berjalan sesuai dengan instruksi modul.
+
+
+### Tugas 8
+
+1. **Perbedaan `Navigator.push()`, `Navigator.pushReplacement()`, dan `Navigator.pop()`, serta mekanisme navigasi aplikasi:**
+   - **`Navigator.push()`:** Menambahkan (*push*) halaman baru ke puncak tumpukan navigasi (*navigation stack*) di atas halaman saat ini. Halaman sebelumnya tetap tersimpan di dalam memori tumpukan sehingga pengguna dapat kembali ke halaman sebelumnya menggunakan tombol kembali (*back*) atau `Navigator.pop()`. Metode inilah yang digunakan saat membuka formulir (`ProjectFormPage` maupun `ExperienceFormPage`) dari **kartu aksi** di halaman utama (`ItemCard`), sehingga tombol kembali bawaan perangkat/browser tetap tersedia untuk pulang ke beranda.
+   - **`Navigator.pushReplacement()`:** Menggantikan (*replace*) rute halaman yang sedang aktif di puncak tumpukan dengan halaman baru, sehingga halaman sebelumnya dihapus dari riwayat tumpukan saat itu. Metode ini digunakan pada opsi navigasi di dalam `LeftDrawer` agar tumpukan halaman tidak menumpuk terus-menerus ketika pengguna berpindah-pindah menu lewat laci navigasi.
+   - **`Navigator.pop()`:** Menghapus (*pop*) halaman paling atas dari tumpukan navigasi untuk kembali ke halaman tepat di bawahnya (atau menutup *overlay* seperti `AlertDialog`).
+   - **Cara opsi `Home` di drawer kembali ke halaman utama:** Ketika pengguna menekan `ListTile` **Home** di `LeftDrawer`, aplikasi menjalankan `Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyHomePage()))` yang menggantikan halaman formulir aktif dengan instance halaman utama `MyHomePage`, sehingga pengguna langsung kembali ke beranda tanpa menumpuk riwayat navigasi baru (sangat berguna saat diuji di Chrome).
+
+2. **Peran `Scaffold`, `AppBar`, dan `Drawer` dalam menjaga konsistensi struktur halaman serta contoh penggunaan warna tema:**
+   - **`Scaffold`** menyediakan kerangka tata letak standar Material Design pada setiap halaman (`MyHomePage`, `ProjectFormPage`, dan `ExperienceFormPage`) yang secara konsisten mengatur slot bagian atas (`appBar`), panel samping (`drawer`), dan area konten utama (`body`).
+   - **`AppBar`** menjaga identitas judul halaman, warna latar, serta tombol ikon pembuka *drawer* di bagian atas setiap layar sehingga pengguna selalu memiliki orientasi navigasi yang seragam.
+   - **`Drawer` (`LeftDrawer`)** diekstrak menjadi komponen widget modular yang dipasang pada properti `drawer` di seluruh halaman, memastikan daftar menu dan perilaku perpindahan halaman identik di mana pun pengguna berada.
+   - **Contoh penggunaan warna tema di lebih dari satu halaman:** Warna `Colors.indigo` digunakan secara konsisten sebagai warna utama tema portofolio di berbagai halaman dan komponen—mulai dari *seed color* tema aplikasi pada `MaterialApp` di `main.dart`, latar belakang `AppBar` dan tombol `Save` di `ProjectFormPage` (`project_form.dart`), latar belakang `AppBar` dan tombol `Save` di `ExperienceFormPage` (`experience_form.dart`), hingga latar belakang `DrawerHeader` pada `LeftDrawer` (`left_drawer.dart`).
+
+3. **Alasan pemilihan tata letak formulir serta peran widget pengatur jarak dan penggulir pada ruang layar terbatas:**
+   - Tata letak formulir menggunakan susunan vertikal `Column` di dalam `SingleChildScrollView` agar alur pengisian data dari atas ke bawah (Posisi, Organisasi, Jenis Pengalaman, Tanggal Mulai/Selesai, Deskripsi, hingga tombol Simpan) mudah dipindai secara visual dan mengikuti pola standar formulir mobile.
+   - **Widget penggulir (`SingleChildScrollView`):** Mencegah terjadinya error *RenderFlex overflow* (garis kuning-hitam) ketika layar berukuran sempit seperti ponsel atau ketika papan ketik virtual (*on-screen keyboard*) muncul dan memakan separuh tinggi layar. Pengguna tetap dapat menggulir halaman ke bawah untuk menjangkau kolom terakhir dan tombol `Save`.
+   - **Widget pengatur jarak (`Padding` dan `SizedBox`):** Memberikan ruang napas (*whitespace*) antar-komponen input dan batas tepi layar sehingga tiap kolom tidak saling menempel, teks label/error terbaca jelas, dan area sentuh (*tap target*) pada tombol maupun *date picker* nyaman ditekan di layar kecil.
+
+4. **Peran `GlobalKey<FormState>`, `validator`, dan `validate()` saat tombol Simpan ditekan, serta contoh input tertolak:**
+   - **`GlobalKey<FormState>` (`_formKey`):** Bertindak sebagai pengenal unik (*handle*) untuk mengakses objek `FormState` dari widget `Form` secara langsung dari luar pohon widget (misalnya dari dalam *callback* `onPressed` tombol `Save`).
+   - **`validator`:** Fungsi pemeriksaan aturan bisnis pada masing-masing `TextFormField` atau `FormField` yang menerima nilai input saat ini dan mengembalikan pesan `String` error jika melanggar aturan, atau `null` jika valid.
+   - **`validate()`:** Method pada `_formKey.currentState` yang dipanggil saat tombol `Save` ditekan untuk mengeksekusi seluruh fungsi `validator` di dalam form secara serentak. Jika seluruh field mengembalikan `null`, `validate()` bernilai `true` dan `AlertDialog` ringkasan ditampilkan; jika ada minimal satu field yang tidak valid, `validate()` bernilai `false` dan pesan kesalahan langsung muncul di bawah kolom terkait.
+   - **Contoh nilai yang ditolak dan mengapa tipe input/keyboard saja belum cukup:** Pada kolom *Posisi / Peran* maupun *Deskripsi Pengalaman*, nilai berupa string yang hanya berisi spasi kosong seperti `"   "` atau input terlalu pendek seperti `"IT"` (kurang dari 3 karakter) akan ditolak oleh `validator` menggunakan pengecekan `value.trim().isEmpty` dan `value.trim().length < 3`. Memilih tipe input teks atau tata letak papan ketik saja tidak cukup karena keyboard hanya membatasi karakter yang bisa diketik, bukan memastikan bahwa pengguna benar-benar mengisi field wajib, tidak sekadar menekan tombol spasi, atau mematuhi batasan panjang minimum dan urutan tanggal (`_endDate` tidak boleh sebelum `_startDate`).
+
+#### AI Disclosure
+- **Tools yang digunakan:** Gemini (LLM)
+- **Strategi prompting:** Memecah pengerjaan secara bertahap per file (*experience_form.dart*, *menu.dart*, *project_card.dart*, dan *left_drawer.dart*) disertai pengecekan kode di setiap langkah.
+- **Bagian Spesifik yang Dibantu AI:**
+  1. **Pemahaman Navigasi, Form, & Validasi Flutter:** Membantu menjelaskan konsep perpindahan halaman (`Navigator.push` vs `Navigator.pushReplacement`), pengelolaan state formulir dengan `GlobalKey<FormState>`, serta pembuatan validasi input dan `showDatePicker`.
+  2. **Verifikasi Struktur Proyek:** Memastikan pemisahan file ke dalam folder `lib/screens/` dan `lib/widgets/`, kesesuaian navigasi dari kartu aksi maupun drawer, serta pengecekan kualitas kode menggunakan `flutter analyze` berjalan tanpa isu.
+- **Verifikasi Manual:** Melakukan commit bertahap per file, menguji langsung seluruh alur navigasi, validasi input kosong/spasi, dan dialog ringkasan di Chrome sebelum push ke GitHub.
