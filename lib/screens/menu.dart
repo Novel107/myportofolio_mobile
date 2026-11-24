@@ -5,7 +5,7 @@ import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({super.key});
+  const MyHomePage({super.key});
 
   final String npm = "2506618881";
   final String nama = "Muhammad Fachri Novelino";
