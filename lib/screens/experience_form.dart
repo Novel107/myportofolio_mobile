@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:myportofolio_mobile/models/experience.dart';
+import 'package:myportofolio_mobile/providers/auth_provider.dart';
+import 'package:myportofolio_mobile/screens/login_screen.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 
 class ExperienceFormPage extends StatefulWidget {
@@ -10,6 +15,7 @@ class ExperienceFormPage extends StatefulWidget {
 
 class _ExperienceFormPageState extends State<ExperienceFormPage> {
   final _formKey = GlobalKey<FormState>();
+  final ApiClient _apiClient = ApiClient();
 
   String _roleTitle = "";
   String _organization = "";
@@ -18,6 +24,7 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
   DateTime? _endDate;
   bool _isCurrentRole = false;
   String _description = "";
+  bool _isSubmitting = false;
 
   final List<String> _experienceTypes = [
     'Internship',
@@ -61,6 +68,98 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
       setState(() {
         _endDate = picked;
       });
+    }
+  }
+
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final auth = context.read<AuthProvider>();
+    if (!auth.isAuthenticated || auth.token == null) {
+      final loggedIn = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+      if (loggedIn != true || !mounted) return;
+    }
+
+    final token = context.read<AuthProvider>().token;
+    if (token == null) return;
+
+    final String periodeText = _isCurrentRole
+        ? "${_formatDate(_startDate)} - Sekarang"
+        : "${_formatDate(_startDate)} - ${_formatDate(_endDate)}";
+
+    final newExperience = Experience(
+      title: "${_roleTitle.trim()} - ${_organization.trim()}",
+      description: "[$_experienceType | $periodeText]\n${_description.trim()}",
+      category: _experienceType.toLowerCase(),
+    );
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      await _apiClient.createExperience(
+        experience: newExperience,
+        token: token,
+      );
+
+      if (!mounted) return;
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Pengalaman berhasil disimpan ke server!'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Posisi: $_roleTitle'),
+                  Text('Organisasi: $_organization'),
+                  Text('Jenis: $_experienceType'),
+                  Text('Periode: $periodeText'),
+                  Text('Deskripsi: $_description'),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (!mounted) return;
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context, true);
+      } else {
+        _formKey.currentState!.reset();
+        setState(() {
+          _roleTitle = "";
+          _organization = "";
+          _experienceType = "Internship";
+          _startDate = null;
+          _endDate = null;
+          _isCurrentRole = false;
+          _description = "";
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
     }
   }
 
@@ -160,7 +259,7 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
                 ),
               ),
 
-              // === Tanggal Mulai (dengan validasi FormField) ===
+              // === Tanggal Mulai ===
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: FormField<DateTime>(
@@ -212,7 +311,7 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
                 },
               ),
 
-              // === Tanggal Selesai (jika tidak aktif) ===
+              // === Tanggal Selesai ===
               if (!_isCurrentRole)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -288,55 +387,10 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(Colors.indigo),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        final String periodeText = _isCurrentRole
-                            ? "${_formatDate(_startDate)} - Sekarang"
-                            : "${_formatDate(_startDate)} - ${_formatDate(_endDate)}";
-
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Pengalaman berhasil ditambahkan!'),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Posisi: $_roleTitle'),
-                                    Text('Organisasi: $_organization'),
-                                    Text('Jenis: $_experienceType'),
-                                    Text('Periode: $periodeText'),
-                                    Text('Deskripsi: $_description'),
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    _formKey.currentState!.reset();
-                                    setState(() {
-                                      _roleTitle = "";
-                                      _organization = "";
-                                      _experienceType = "Internship";
-                                      _startDate = null;
-                                      _endDate = null;
-                                      _isCurrentRole = false;
-                                      _description = "";
-                                    });
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    },
-                    child: const Text(
-                      "Save",
-                      style: TextStyle(color: Colors.white),
+                    onPressed: _isSubmitting ? null : _submitForm,
+                    child: Text(
+                      _isSubmitting ? "Menyimpan..." : "Save",
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
