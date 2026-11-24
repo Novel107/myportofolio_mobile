@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:myportofolio_mobile/widgets/project_card.dart';
+import 'package:provider/provider.dart';
+import 'package:myportofolio_mobile/providers/auth_provider.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
+import 'package:myportofolio_mobile/widgets/project_card.dart';
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
@@ -9,15 +11,20 @@ class MyHomePage extends StatelessWidget {
   final String nama = "Muhammad Fachri Novelino";
   final String kelas = "PBP D";
 
-  final List<ItemHomepage> items = [
-    ItemHomepage("Lihat Proyek", Icons.folder, Colors.blue),
-    ItemHomepage("Tambah Proyek", Icons.add_circle, Colors.green),
-    ItemHomepage("Tambah Pengalaman", Icons.work_history, Colors.amber[800]!),
-    ItemHomepage("Logout", Icons.logout, Colors.red),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+
+    final List<ItemHomepage> items = [
+      ItemHomepage("Lihat Pengalaman", Icons.list_alt, Colors.blue),
+      ItemHomepage("Tambah Proyek", Icons.add_circle, Colors.green),
+      ItemHomepage("Tambah Pengalaman", Icons.work_history, Colors.amber[800]!),
+      if (auth.isAuthenticated)
+        ItemHomepage("Logout", Icons.logout, Colors.red)
+      else
+        ItemHomepage("Login", Icons.login, Colors.teal),
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -48,11 +55,13 @@ class MyHomePage extends StatelessWidget {
             Center(
               child: Column(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 16.0),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
                     child: Text(
-                      'Selamat datang di MyPortfolio Mobile!',
-                      style: TextStyle(
+                      auth.isAuthenticated
+                          ? 'Selamat datang, ${auth.username}!'
+                          : 'Selamat datang di MyPortfolio Mobile!',
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18.0,
                       ),
