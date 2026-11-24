@@ -167,9 +167,7 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Text('Add Experience Form'),
-        ),
+        title: const Center(child: Text('Add Experience Form')),
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
       ),
@@ -246,10 +244,10 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
                   ),
                   initialValue: _experienceType,
                   items: _experienceTypes
-                      .map((type) => DropdownMenuItem(
-                            value: type,
-                            child: Text(type),
-                          ))
+                      .map(
+                        (type) =>
+                            DropdownMenuItem(value: type, child: Text(type)),
+                      )
                       .toList(),
                   onChanged: (String? newValue) {
                     setState(() {
@@ -355,7 +353,8 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
                 child: TextFormField(
                   maxLines: 4,
                   decoration: InputDecoration(
-                    hintText: "Jelaskan tanggung jawab atau pencapaian utama...",
+                    hintText:
+                        "Jelaskan tanggung jawab atau pencapaian utama...",
                     labelText: "Deskripsi Pengalaman",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),

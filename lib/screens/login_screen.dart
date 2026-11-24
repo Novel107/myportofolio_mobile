@@ -85,7 +85,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       border: OutlineInputBorder(),
                     ),
                     textInputAction: TextInputAction.next,
-                    validator: (value) => (value == null || value.trim().isEmpty)
+                    validator: (value) =>
+                        (value == null || value.trim().isEmpty)
                         ? 'Username tidak boleh kosong'
                         : null,
                   ),

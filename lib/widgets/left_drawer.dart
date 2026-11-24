@@ -18,9 +18,7 @@ class LeftDrawer extends StatelessWidget {
       child: ListView(
         children: [
           DrawerHeader(
-            decoration: const BoxDecoration(
-              color: Colors.indigo,
-            ),
+            decoration: const BoxDecoration(color: Colors.indigo),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -37,10 +35,7 @@ class LeftDrawer extends StatelessWidget {
                   auth.isAuthenticated
                       ? 'Signed in as ${auth.username}'
                       : 'Explore personal projects and experiences!',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.white,
-                  ),
+                  style: const TextStyle(fontSize: 15, color: Colors.white),
                 ),
               ],
             ),
@@ -73,7 +68,9 @@ class LeftDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const ProjectFormPage()),
+                MaterialPageRoute(
+                  builder: (context) => const ProjectFormPage(),
+                ),
               );
             },
           ),

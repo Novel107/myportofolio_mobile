@@ -49,7 +49,9 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                item.isOngoing ? 'Status: Sedang Berlangsung' : 'Status: Selesai',
+                item.isOngoing
+                    ? 'Status: Sedang Berlangsung'
+                    : 'Status: Selesai',
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
@@ -170,7 +172,10 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: Colors.indigo.shade100,
-                      child: const Icon(Icons.work_outline, color: Colors.indigo),
+                      child: const Icon(
+                        Icons.work_outline,
+                        color: Colors.indigo,
+                      ),
                     ),
                     title: Text(
                       item.title,

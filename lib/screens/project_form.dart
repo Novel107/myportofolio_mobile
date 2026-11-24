@@ -10,13 +10,13 @@ class ProjectFormPage extends StatefulWidget {
 
 class _ProjectFormPageState extends State<ProjectFormPage> {
   final _formKey = GlobalKey<FormState>();
-  
+
   String _projectName = "";
   String _description = "";
-  String _category = "Web Development"; 
+  String _category = "Web Development";
   String _technologies = "";
   String _projectLink = "";
-  
+
   final List<String> _categories = [
     'Web Development',
     'Mobile Development',
@@ -29,9 +29,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Text('Add Project Form'),
-        ),
+        title: const Center(child: Text('Add Project Form')),
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
       ),
@@ -53,7 +51,9 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                     ),
                   ),
                   onChanged: (String? value) {
-                    setState(() { _projectName = value!; });
+                    setState(() {
+                      _projectName = value!;
+                    });
                   },
                   validator: (String? value) {
                     if (value == null || value.trim().isEmpty) {
@@ -75,7 +75,9 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                     ),
                   ),
                   onChanged: (String? value) {
-                    setState(() { _description = value!; });
+                    setState(() {
+                      _description = value!;
+                    });
                   },
                   validator: (String? value) {
                     if (value == null || value.trim().isEmpty) {
@@ -95,12 +97,18 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                     ),
                   ),
                   initialValue: _category,
-                  items: _categories.map((category) => DropdownMenuItem(
-                    value: category,
-                    child: Text(category),
-                  )).toList(),
+                  items: _categories
+                      .map(
+                        (category) => DropdownMenuItem(
+                          value: category,
+                          child: Text(category),
+                        ),
+                      )
+                      .toList(),
                   onChanged: (String? newValue) {
-                    setState(() { _category = newValue!; });
+                    setState(() {
+                      _category = newValue!;
+                    });
                   },
                 ),
               ),
@@ -115,7 +123,9 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                     ),
                   ),
                   onChanged: (String? value) {
-                    setState(() { _technologies = value!; });
+                    setState(() {
+                      _technologies = value!;
+                    });
                   },
                 ),
               ),
@@ -130,7 +140,9 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                     ),
                   ),
                   onChanged: (String? value) {
-                    setState(() { _projectLink = value!; });
+                    setState(() {
+                      _projectLink = value!;
+                    });
                   },
                 ),
               ),
@@ -175,7 +187,10 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                         );
                       }
                     },
-                    child: const Text("Save", style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      "Save",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ),

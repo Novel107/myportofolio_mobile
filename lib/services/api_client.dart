@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:myportofolio_mobile/config.dart';
 import 'package:myportofolio_mobile/models/experience.dart';
@@ -16,7 +17,7 @@ class ApiException implements Exception {
 
 class ApiClient {
   ApiClient({http.Client? client, this.baseUrl = apiBaseUrl})
-      : _client = client ?? http.Client();
+    : _client = client ?? http.Client();
 
   final http.Client _client;
   final String baseUrl;
@@ -24,10 +25,10 @@ class ApiClient {
   Uri _uri(String path) => Uri.parse('$baseUrl$path');
 
   Map<String, String> _headers({String? token}) => {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        if (token != null && token.isNotEmpty) 'Authorization': 'Token $token',
-      };
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    if (token != null && token.isNotEmpty) 'Authorization': 'Token $token',
+  };
 
   /// Mengambil daftar pengalaman (publik, tanpa token).
   Future<List<Experience>> fetchExperiences() async {

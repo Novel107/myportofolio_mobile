@@ -25,9 +25,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: MyHomePage(),
-        routes: {
-          '/login': (context) => const LoginScreen(),
-        },
+        routes: {'/login': (context) => const LoginScreen()},
       ),
     );
   }
