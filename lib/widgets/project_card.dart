@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:myportofolio_mobile/screens/project_form.dart';
+import 'package:provider/provider.dart';
+import 'package:myportofolio_mobile/providers/auth_provider.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
+import 'package:myportofolio_mobile/screens/experience_list.dart';
+import 'package:myportofolio_mobile/screens/login_screen.dart';
+import 'package:myportofolio_mobile/screens/project_form.dart';
 
 class ItemHomepage {
   final String name;
@@ -21,14 +25,52 @@ class ItemCard extends StatelessWidget {
       color: item.color,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap: () {
+        onTap: () async {
+          if (item.name == "Logout") {
+            final auth = context.read<AuthProvider>();
+            try {
+              await auth.logout();
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  const SnackBar(content: Text("Berhasil logout!")),
+                );
+            } catch (e) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text(e.toString().replaceFirst('Exception: ', '')),
+                  ),
+                );
+            }
+            return;
+          }
+
+          if (item.name == "Login") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+            );
+            return;
+          }
+
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
               SnackBar(content: Text("Kamu telah menekan tombol ${item.name}!")),
             );
 
-          if (item.name == "Tambah Proyek") {
+          if (item.name == "Lihat Pengalaman" || item.name == "Lihat Proyek") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ExperienceListPage(),
+              ),
+            );
+          } else if (item.name == "Tambah Proyek") {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const ProjectFormPage()),
@@ -36,7 +78,9 @@ class ItemCard extends StatelessWidget {
           } else if (item.name == "Tambah Pengalaman") {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const ExperienceFormPage()),
+              MaterialPageRoute(
+                builder: (context) => const ExperienceFormPage(),
+              ),
             );
           }
         },
